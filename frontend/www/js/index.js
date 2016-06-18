@@ -18,7 +18,7 @@
  */
 
 $.support.cors=true;
-LOG_PREPEND = "SurpriseMe!!";
+LOG_PREPEND = "SurpriseMe!! ";
 
 server_ip="http://139.59.9.19:8000/api/";
 login="login";
@@ -101,77 +101,72 @@ function sendLogin() {
 	var str = JSON.stringify(obj);
 	console.log(LOG_PREPEND + str);
 
-	$.ajax({
-		url: server_ip+login,
-		type: "POST",
-		dataType: "xml/html/script/json", // expected format for response
-		contentType: "application/json", // send as JSON
-		data: str,
-
-		success: function(data) {
-			alert("bhai pass ho gaya");
-		},
-		
-		complete: function(data) {
-			//called when complete
-			//var obj = JSON.parse(data);
-			console.log(data);
-			alert(data.status);
-			if(data.status == 200 && data.readyState == 4)
-			{
-				var obj = JSON.parse(data.responseText);
-				console.log(data);
-				console.log("asassas");
-				if (!obj.verified) {
-					console.log(LOG_PREPEND + "Not verified");
-					alert(LOG_PREPEND + "User Not Verified");
-				}
-				//username = obj.name;
-				credits = obj.credits;
-				showPage("challenge");
-				$("#navbar").show();
-			}
-			else
-			{
-				alert("Something went wrong, please try again.");
-				console.log("Unable to contact server, try again");
-			}
+	doAjaxJSON(login, str, function(data) {
+		var obj = JSON.parse(data);
+		if (!obj.verified) {
+			console.log(LOG_PREPEND + "Not verified");
+			alert(LOG_PREPEND + "User Not Verified");
+			return;
 		}
+		username = obj.name;
+		credits = obj.credits;
+		showPage("challenge");
+		$("#navbar").show();
 	});
 }
 
-function showSurprise() {
+function sendShowSurprise() {
 	var obj = new Object();
 	obj.user = username;
 
 	var str = JSON.stringify(obj);
 	console.log(LOG_PREPEND + str);
-	$.post(server_ip+showSurprise, str, function(data, status) {
-		console.log(LOG_PREPEND + data);
 
+	doAjaxJSON(showSurprise, str, function(data) {
 		var obj = JSON.parse(data);
 		challenge_id = obj.id;
 		challenge = obj.challenge;
 		credits = obj.credits;
 		skip_credits = obj.skip_credits;
+		console.log(data);
+		console.log(skip_credits);
+		console.log(challenge);
 
 		$("#surpriseme").hide();
 		$("#skipsurprisebutton").show();
-		$("#skipcost").text(skip_credits);
-		$("#surprisetext").text(challenge);
+		$("#skipcost").html(skip_credits);
+		$("#surprisetext").html(challenge);
 	});
 }
 
-function skipSurprise() {
+function sendSkipSurprise() {
 	var obj = new Object();
 	obj.user = username;
 	obj.id = challege_id;
 
 	var str = JSON.stringify(obj);
 	console.log(LOG_PREPEND + str);
-	$.post(server_ip+skipSurprise, str, function(data, status) {
-		console.log(LOG_PREPEND + data);
 
+	doAjaxJSON(skipSurprise, str, function(data) {
+		var obj = JSON.parse(data);
+		challenge_id = obj.id;
+		challenge = obj.challenge;
+		credits = obj.credits;
+		skip_credits = obj.skip_credits;
+
+		$("#skipcost").text(skip_credits);
+		$("#surprisetext").text(challenge);
+	});
+}
+
+function sendCompleteSurprise() {
+	var obj = new Object();
+	obj.user = username;
+
+	var str = JSON.stringify(obj);
+	console.log(LOG_PREPEND + str);
+
+	doAjaxJSON(completeSurprise, str, function(data) {
 		var obj = JSON.parse(data);
 		challenge_id = obj.id;
 		challenge = obj.challenge;
@@ -180,19 +175,21 @@ function skipSurprise() {
 	});
 }
 
-function completeSurprise() {
-	var obj = new Object();
-	obj.user = username;
+function doAjaxJSON(page, my_data, callback) {
+	$.ajax({
+		url: server_ip + page,
+		type: "POST",
+		dataType: "xml/html/script/json",
+		contentType: "application/json",
+		data: my_data,
 
-	var str = JSON.stringify(obj);
-	console.log(LOG_PREPEND + str);
-	$.post(server_ip+completeSurprise, str, function(data, status) {
-		console.log(LOG_PREPEND + data);
-
-		var obj = JSON.parse(data);
-		challenge_id = obj.id;
-		challenge = obj.challenge;
-		credits = obj.credits;
-		skip_credits = obj.skip_credits;
+		complete: function(data) {
+			console.log(data);
+			if(data.status == 200 && data.readyState == 4) {
+				callback(data.responseText);
+			} else {
+				console.log("Unable to contact server (" + server_ip + page + "), try again...");
+			}
+		}
 	});
 }
