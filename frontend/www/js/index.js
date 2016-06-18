@@ -69,18 +69,24 @@ function onLoad() {
 }
 
 function showPage(page) {
-	console.log("fun running");
 	if (page === "login") {
 		console.log(LOG_PREPEND + "Showing login page");
 		$("#login").show();
 		$("#challenge").hide();
 		$("#wall").hide();
+		$("#navbar").hide();
+		$("#surpriseme").hide();
+		$("#skipsurprisebutton").hide();
+		$("#completebutton").hide();
 
 	} else if (page === "challenge") {
 		console.log(LOG_PREPEND + "Showing challenge page");
 		$("#login").hide();
 		$("#challenge").show();
 		$("#wall").hide();
+		$("#surpriseme").show();
+		$("#skipsurprisebutton").hide();
+		$("#completebutton").hide();
 
 	} else if (page === "wall") {
 		console.log(LOG_PREPEND + "Showing activity wall page");
@@ -114,6 +120,8 @@ function sendLogin() {
 		showPage("challenge");
 		$("#bpoints").html(credits);
 		$("#navbar").show();
+
+		Materialize.toast('Welcome ' + username, 4000);
 	});
 }
 
@@ -145,7 +153,7 @@ function sendShowSurprise() {
 function sendSkipSurprise() {
 	var obj = new Object();
 	obj.user = username;
-	obj.id = challege_id;
+	obj.id = challenge_id;
 
 	var str = JSON.stringify(obj);
 	console.log(LOG_PREPEND + str);
@@ -167,8 +175,8 @@ function sendCompleteSurprise() {
 	var cam = new Object();
 	cam.saveToPhotoAlbum = false;
 	cam.destinationType = Camera.DestinationType.DATA_URL;
-	cam.targetWidth = 800;
-	cam.targetHeight = 800;
+	cam.targetWidth = 400;
+	cam.targetHeight = 400;
 
 	navigator.camera.getPicture(
 		function (data) {

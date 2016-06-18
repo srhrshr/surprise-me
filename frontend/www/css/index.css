@@ -35,3 +35,10 @@ body {
     background-color: black;
     display: inline-block;
 }
+
+#surprisetext {
+	padding-top:20vh;
+	font-size: 1.25em;
+    font-weight: 700;
+    color: white;
+}
