@@ -35,20 +35,6 @@ exports.callProcedure = function(user_name, callback) {
   });
 };
 
-exports.pr_set_user = function(user, password ,user_full_name ,user_mobile_number,user_profile_picture,callback ){
-  var sql =  "SELECT * FROM users WHERE user_login_id= ? AND user_login_pass = ?";
-  // get a connection from the pool
-  pool.getConnection(function(err, connection) {
-    if(err) { console.log(err); callback(true); return; }
-    // make the query
-    connection.query(sql, [user_id,password], function(err, results) {
-      connection.release();
-      if(err) { console.log(err); callback(true); return; }
-      callback(false, results);
-    });
-  });
-};
-
 exports.fn_get_user = function(user , password,callback ){
   var sql =  "SELECT * FROM users WHERE user_login_id= ? AND user_login_pass = ?";
   // get a connection from the pool
@@ -62,6 +48,23 @@ exports.fn_get_user = function(user , password,callback ){
     });
   });
 };
+
+
+exports.pr_set_user = function(user,password,callback ){
+  var sql = "insert into users (user_login_id , user_login_pass , user_full_name , user_mobile_number , user_profile_picture ) VALUES (?,?,'',1234567890, NULL)";
+  //var sql =  "INSERT INTO users SET user_login_id = ? AND user_login_pass = ?";
+  // get a connection from the pool
+  pool.getConnection(function(err, connection) {
+    if(err) { console.log(err); callback(true); return; }
+    // make the query
+    connection.query(sql, [user_id,password], function(err, results) {
+      connection.release();
+      if(err) { console.log(err); callback(true); return; }
+      callback(false, results);
+    });
+  });
+};
+
 
 /*exports.fn_get_user = function(user_id , password,callback ){
   var sql = "CALL fn_get_user ( ? , ? )";
@@ -109,17 +112,17 @@ exports.fn_get_user = function(user_id , password,callback ){
 var app = express();
 
 app.use(morgan('dev'));
-app.use(bodyParser.urlencoded({
+/*app.use(bodyParser.urlencoded({
     extended: true
-}));
+}));*/
 app.use(bodyParser.json());
 app.use(methodOverride());
 
 app.post('/api/login', api.login);
 
-/*app.post('/api/register', api.register);
+app.post('/api/register', api.register);
 
-app.post('/api/showSurprise', api.showSurprise);
+/*app.post('/api/showSurprise', api.showSurprise);
 
 app.post('/api/completeSurprise', api.completeSurprise);
 
