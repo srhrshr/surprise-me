@@ -84,7 +84,7 @@ exports.fn_get_challenges = function(user_id ,callback ){
 
 exports.fn_skip_challenge = function(user_id,challenge_id, callback ){
   var sql1 = "UPDATE users SET user_credits = user_credits - 5 WHERE user_login_id = ?;"
-  var sql2 = "INSERT INTO skip_activities (user_id, challenge_id) VALUES (?,?);"
+  var sql2 = "INSERT INTO skip_activities (user_id, challenge_id) VALUES (SELECT user_id,? FROM users WHERE user_login_id = ?);"
   var sql3 = "SELECT c.challenge_id , c.challenge_type , c.challenge_difficulty , c.challenge_desc , c.challenge_credits FROM users u, challenges c WHERE c.challenge_difficulty <= u.user_level AND u.user_login_id = ? AND c.challenge_id NOT IN (SELECT challenge_id from skip_activities) AND c.challenge_id NOT IN (SELECT challenge_id from activities);"
   // get a connection from the pool
   pool.getConnection(function(err, connection) {
@@ -93,7 +93,9 @@ exports.fn_skip_challenge = function(user_id,challenge_id, callback ){
     connection.query(sql1, [user_id], function(err, results) {
       if(err) { console.log(err); callback(true); return; }
     });
-    connection.query(sql2, [user_id, challenge_id], function(err, results) {
+    console.log(user_id)
+    console.log(challenge_id)
+    connection.query(sql2, [challenge_id,user_id], function(err, results) {
       if(err) { console.log(err); callback(true); return; }
     });
     connection.query(sql3, [user_id], function(err, results) {
