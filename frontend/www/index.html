@@ -68,7 +68,7 @@
               <div class="row">
                 <div class="input-field col s12 center">
                   <img height="50" width="50" src="img/logo.png">
-                  <p class="center login-form-text">SurpriseMe</p>
+                  <p class="center login-form-text">Surprise Me</p>
                 </div>
               </div>
               <div class="row margin">
@@ -85,10 +85,10 @@
               </div>
               <div class="row">
                 <div class="input-field col s12">
-                  <a onclick="sendLogin();" class="btn waves-effect waves-light col s12">Login</a>
+                  <a onclick="sendLogin();" id="login" class="btn waves-light waves-effect col s12">Login</a>
                 </div>
                 <div class="input-field col s12">
-                  <a onclick="sendLogin();" class="btn waves-effect waves-light col s12">Register</a>
+                  <a onclick="sendLogin();" id="register" class="btn waves-light waves-effect col s12">Register</a>
                 </div>
               </div>
             </form>
@@ -106,7 +106,7 @@
                 </div>
                 <div class="card-action centercontent">
                   <a id="surpriseme" onclick="sendShowSurprise();" class="btn">Surprise Me</a><br><br>
-                  <a style="display:none;" id="skipsurprisebutton" class="btn">Skip This For <span id="skipcost"></span><img src="img/coinssmall.png">)</a>
+                  <a style="display:none;" onclick="sendSkipSurprise();"  id="skipsurprisebutton" class="btn">Skip This For <span id="skipcost"></span><img src="img/coinssmall.png"></a>
                 </div>
               </div>
             </div>

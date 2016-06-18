@@ -45,3 +45,9 @@ body {
     z-index: 100000;
     display: none;
 }
+#surprisetext {
+	padding-top:20vh;
+	font-size: 1.25em;
+    font-weight: 700;
+    color: white;
+}
