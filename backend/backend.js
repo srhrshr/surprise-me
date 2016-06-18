@@ -158,7 +158,7 @@ exports.fn_skip_challenge = function(user_id, challenge_id, callback) {
 };
 exports.fn_complete_challenge = function(user_id, challenge_id, photo_path, callback) {
     var sql1 = "UPDATE users SET user_credits = user_credits + (SELECT challenge_credits FROM challenges WHERE challenge_id = ?) WHERE user_login_id = ?;"
-    var sql2 = "INSERT INTO activities (user_id, challenge_id, activity_picture) VALUES (?,?,?);"
+    var sql2 = "INSERT INTO activities (user_id, challenge_id, activity_picture) SELECT user_id,?,? FROM users WHERE user_login_id = ?;"
     var sql3 = "SELECT c.challenge_id , c.challenge_type , c.challenge_difficulty , c.challenge_desc , c.challenge_credits FROM users u, challenges c WHERE c.challenge_difficulty <= u.user_level AND u.user_login_id = ? AND c.challenge_id NOT IN (SELECT challenge_id from skip_activities WHERE user_id = (SELECT user_id from users where user_login_id = ?) ) AND c.challenge_id NOT IN (SELECT challenge_id from activities WHERE user_id = (SELECT user_id from users where user_login_id = ?) );"
         // get a connection from the pool
     pool.getConnection(function(err, connection) {
@@ -181,7 +181,7 @@ exports.fn_complete_challenge = function(user_id, challenge_id, photo_path, call
             return;
         }
         // make the query
-        connection.query(sql2, [user_id, challenge_id, photo_path], function(err, results) {
+        connection.query(sql2, [challenge_id, photo_path,user_id], function(err, results) {
             connection.release();
             if (err) {
                 console.log(err);
