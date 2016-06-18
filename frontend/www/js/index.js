@@ -160,6 +160,9 @@ function sendSkipSurprise() {
 	var str = JSON.stringify(obj);
 	console.log(LOG_PREPEND + str);
 
+	credits -= skip_credits;
+	$("#bpoints").html(credits);
+
 	doAjaxJSON(skipSurprise, str, function(data) {
 		var obj = JSON.parse(data);
 		challenge_id = obj.id;
