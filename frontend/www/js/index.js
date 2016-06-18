@@ -32,6 +32,7 @@ credits=0;
 skip_credits=0;
 challenge_id=0;
 challenge="";
+challenge_credits=0;
 
 // For PC browser only
 $('body').onload=onLoad();
@@ -111,6 +112,7 @@ function sendLogin() {
 		username = obj.name;
 		credits = obj.credits;
 		showPage("challenge");
+		$("#bpoints").html(credits);
 		$("#navbar").show();
 	});
 }
@@ -126,7 +128,7 @@ function sendShowSurprise() {
 		var obj = JSON.parse(data);
 		challenge_id = obj.id;
 		challenge = obj.challenge;
-		credits = obj.credits;
+		challenge_credits = obj.credits;
 		skip_credits = obj.skip_credits;
 		console.log(data);
 		console.log(skip_credits);
@@ -152,6 +154,7 @@ function sendSkipSurprise() {
 		var obj = JSON.parse(data);
 		challenge_id = obj.id;
 		challenge = obj.challenge;
+		challenge_credits = obj.credits;
 		credits = obj.credits;
 		skip_credits = obj.skip_credits;
 
@@ -171,6 +174,24 @@ function sendCompleteSurprise() {
 		function (data) {
 			// success
 			console.log(LOG_PREPEND + "Picture success");
+			var obj = new Object();
+			obj.user = username;
+			obj.challenge_id = challenge_id;
+			obj.photo = data;
+
+			var str = JSON.stringify(obj);
+			console.log(LOG_PREPEND + str);
+
+			doAjaxJSON(completeSurprise, str, function(data) {
+				var obj = JSON.parse(data);
+				if (obj.success) {
+					console.log(LOG_PREPEND + "Server unable to save");
+					return;
+				}
+				Materialize.toast('Posted to the wall', 4000);
+				credits += challenge_credits;
+				$("#bpoints").html(credits);
+			});
 		},
 		function (msg) {
 			// error
@@ -178,22 +199,7 @@ function sendCompleteSurprise() {
 			return;
 		},
 		cam
-		);
-
-	/*
-	var obj = new Object();
-	obj.user = username;
-
-	var str = JSON.stringify(obj);
-	console.log(LOG_PREPEND + str);
-
-	doAjaxJSON(completeSurprise, str, function(data) {
-		var obj = JSON.parse(data);
-		challenge_id = obj.id;
-		challenge = obj.challenge;
-		credits = obj.credits;
-		skip_credits = obj.skip_credits;
-	});*/
+	);
 }
 
 function doAjaxJSON(page, my_data, callback) {
