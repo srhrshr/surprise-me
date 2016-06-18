@@ -16,6 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+server_ip="http://localhost/";
+username="";
+credits=0;
+login="login";
+activity="activity";
+
+// For PC browser only
+$('body').onload=onLoad();
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -37,13 +47,52 @@ var app = {
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
+        onLoad();
     }
 };
+
+function onLoad() {
+	showPage("login");
+}
+
+function showPage(page) {
+	if (page === "login") {
+		$("#login").show();
+		$("#challenge").hide();
+		$("#wall").hide();
+
+	} else if (page === "challenge") {
+		$("#page").hide();
+		$("#challenge").show();
+		$("#wall").hide();
+
+	} else if (page === "wall") {
+		$("#page").hide();
+		$("#challenge").hide();
+		$("#wall").show();
+
+	} else {
+		console.log ("Invalid Page Called: " + page);
+	}
+}
+
+function sendLogin() {
+	var obj = new Object();
+	obj.user = $("#userid");
+	obj.password = $("#password");
+
+	var str = JSON.stringify(obj);
+	console.log(str);
+	$.post(server_ip+login, str, function(data, status) {
+		console.log(data);
+		var obj = JSON.parse(data);
+		if (!obj.verified) {
+			console.log("Not verified");
+			alert("User Not Verified");
+		}
+		username = obj.name;
+		credits = obj.credits;
+		showPage("challenge");
+	});
+}
+
