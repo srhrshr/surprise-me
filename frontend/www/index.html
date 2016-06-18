@@ -40,16 +40,32 @@
 
     <link rel="stylesheet" type="text/css" href="css/materialize.min.css" />
     <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Hello World</title>
 </head>
 
 <body>
     <div class="app">
-        <div id="login" class="row">
+      <nav id="navbar" class="hidden">
+        <div class="nav-wrapper">
+          <a href="#" class="brand-logo"><img height="50" width="50" src="img/logo.png"></a>
+          <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                  <li><a href="sass.html">Surprise</a></li>
+                  <li><a href="sass.html">Wall</a></li>
+                </ul>
+                <ul class="side-nav" id="mobile-demo">
+                  <li><a href="sass.html">Surprise</a></li>
+                  <li><a href="sass.html">Wall</a></li>
+                </ul>
+        </div>
+      </nav>
+        <div id="login" class="row hidden">
           <div class="col s12 z-depth-6 card-panel">
             <form class="login-form">
               <div class="row">
                 <div class="input-field col s12 center">
+                  <img height="50" width="50" src="img/logo.png">
                   <p class="center login-form-text">SurpriseMe</p>
                 </div>
               </div>
@@ -78,11 +94,28 @@
             </form>
           </div>
         </div>
+
+        <div style="display:none;" id="challenge">
+          <div class="row">
+            <div class="col s12 centercontent">
+              <div class="card blue-grey darken-1">
+                <div style="height:60vh;" class="card-content white-text">
+                  <span class="card-title">Your Surprise</span>
+                  <p id="surprisetext">Hit the SurpriseMe button!</p>
+                </div>
+                <div class="card-action centercontent">
+                  <a id="surpriseme" onclick="showSurprise();" class="btn">Surprise Me</a><br><br>
+                  <a style="display:none;" id="skipsurprisebutton" class="btn">Skip This(-<span id="skipcost"></span> Pts)</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/materialize.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/angular.min.js"></script>
     <script type="text/javascript">
         app.initialize();

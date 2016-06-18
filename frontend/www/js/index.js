@@ -63,10 +63,12 @@ var app = {
 
 function onLoad() {
 	console.log(LOG_PREPEND + "onLoad()");
+	$(".button-collapse").sideNav();
 	showPage("login");
 }
 
 function showPage(page) {
+	console.log("fun running");
 	if (page === "login") {
 		console.log(LOG_PREPEND + "Showing login page");
 		$("#login").show();
