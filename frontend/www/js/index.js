@@ -98,7 +98,6 @@ function sendLogin() {
 
 	var str = JSON.stringify(obj);
 	console.log(LOG_PREPEND + str);
-	
 
 	$.ajax({
 		url: server_ip+login,
@@ -118,8 +117,6 @@ function sendLogin() {
 			alert(data.status);
 			if(data.status == 200 && data.readyState == 4)
 			{
-				alert("i came here"+data.status);
-				alert(data.responseText.verified);
 				var obj = JSON.parse(data.responseText);
 				console.log(data);
 				console.log("asassas");
@@ -137,32 +134,8 @@ function sendLogin() {
 				alert("Something went wrong, please try again.");
 				console.log("Unable to contact server, try again");
 			}
-			
 		}
-/*
-		success: function(data) {
-			//called when successful
-			var obj = JSON.parse(data);
-			console.log(data);
-			console.log("asassas");
-			if (!obj.verified) {
-			console.log(LOG_PREPEND + "Not verified");
-			alert(LOG_PREPEND + "User Not Verified");
-			}
-			//username = obj.name;
-			credits = obj.credits;
-			showPage("challenge");
-			$("#navbar").show();
-		},
-
-		error: function(data) {
-			//called when there is an error
-			console.log(data);
-			alert("failed");
-		},
-*/
 	});
-
 }
 
 function showSurprise() {
