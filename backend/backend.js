@@ -234,7 +234,7 @@ app.use(morgan('dev'));
     extended: true
 }));*/
 app.use(express.static('public'));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
 app.use(methodOverride());
 app.post('/api/login', api.login);
 app.post('/api/register', api.register);
