@@ -105,7 +105,7 @@ exports.skipSurprise = function(req,res){
 exports.completeSurprise = function(req,res){
     console.log(req.body.challenge_id)
     console.log(req.body.user)
-    db.fn_complete_challenges(req.body.user,req.body.challenge_id, function(err, results) {
+    db.fn_complete_challenge(req.body.user,req.body.challenge_id, function(err, results) {
         if (err) {
             console.log(err)
             res.send({
