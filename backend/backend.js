@@ -206,6 +206,28 @@ exports.fn_complete_challenge = function(user_id, challenge_id, callback) {
             });
         });
 };
+exports.fn_get_wall  = function(user, password, callback) {
+    var sql = "SELECT * FROM users WHERE user_login_id= ? AND user_login_pass = ?";
+    // get a connection from the pool
+    pool.getConnection(function(err, connection) {
+        if (err) {
+            console.log(err);
+            callback(true);
+            return;
+        }
+        // make the query
+        connection.query(sql, [user, password], function(err, results) {
+            connection.release();
+            if (err) {
+                console.log(err);
+                callback(true);
+                return;
+            }
+            callback(false, results);
+        });
+    });
+};
+
 var app = express();
 app.use(morgan('dev'));
 /*app.use(bodyParser.urlencoded({
@@ -218,7 +240,7 @@ app.post('/api/register', api.register);
 app.post('/api/showSurprise', api.showSurprise);
 app.post('/api/skipSurprise', api.skipSurprise);
 app.post('/api/completeSurprise', api.completeSurprise);
-/*app.post('/api/wall', api.wall);*/
+app.post('/api/wall', api.wall);
 // Start server
 app.listen(8000, function() {
     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
