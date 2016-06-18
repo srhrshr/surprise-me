@@ -76,7 +76,36 @@ exports.showSurprise = function(req,res){
 exports.skipSurprise = function(req,res){
     console.log(req.body.challenge_id)
     console.log(req.body.user)
-    db.fn_skip_challenges(req.body.user,req.body.challenge_id, function(err, results) {
+    db.fn_skip_challenge(req.body.user,req.body.challenge_id, function(err, results) {
+        if (err) {
+            console.log(err)
+            res.send({
+                "status": 500,
+                "message": "Server Error"
+            });
+            return;
+        } else if (results != undefined && results.length > 0) {
+            result = results[Math.ceil(Math.random()*results.length - 1)]
+            var obj = {
+                "id":result.challenge_id,
+                "challenge": result.challenge_desc,
+                "skip_credits":5,
+                "credits": result.challenge_credits
+            }
+            res.status(200).json(obj);
+        } else {
+            res.status(200).send({
+                "message": "User not found!"
+            });
+            return;
+        }
+    });
+}
+
+exports.completeSurprise = function(req,res){
+    console.log(req.body.challenge_id)
+    console.log(req.body.user)
+    db.fn_complete_challenges(req.body.user,req.body.challenge_id, function(err, results) {
         if (err) {
             console.log(err)
             res.send({
