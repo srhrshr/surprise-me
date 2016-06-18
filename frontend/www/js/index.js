@@ -17,11 +17,21 @@
  * under the License.
  */
 
-server_ip="http://localhost/";
+$.support.cors=true;
+LOG_PREPEND = "SurpriseMe!! ";
+
+server_ip="http://139.59.9.19:8000/api/";
+login="login";
+showSurprise="showSurprise";
+completeSurprise="completeSurprise";
+skipSurprise="skipSurprise";
+activity="wall";
+
 username="";
 credits=0;
-login="login";
-activity="activity";
+skip_credits=0;
+challenge_id=0;
+challenge="";
 
 // For PC browser only
 $('body').onload=onLoad();
@@ -52,6 +62,7 @@ var app = {
 };
 
 function onLoad() {
+	console.log(LOG_PREPEND + "onLoad()");
 	$(".button-collapse").sideNav();
 	showPage("login");
 }
@@ -59,42 +70,126 @@ function onLoad() {
 function showPage(page) {
 	console.log("fun running");
 	if (page === "login") {
+		console.log(LOG_PREPEND + "Showing login page");
 		$("#login").show();
 		$("#challenge").hide();
 		$("#wall").hide();
 
 	} else if (page === "challenge") {
+		console.log(LOG_PREPEND + "Showing challenge page");
 		$("#login").hide();
 		$("#challenge").show();
 		$("#wall").hide();
 
 	} else if (page === "wall") {
+		console.log(LOG_PREPEND + "Showing activity wall page");
 		$("#login").hide();
 		$("#challenge").hide();
 		$("#wall").show();
 
 	} else {
-		console.log ("Invalid Page Called: " + page);
+		console.log (LOG_PREPEND + "Invalid Page Called: " + page);
 	}
 }
 
 function sendLogin() {
 	var obj = new Object();
-	obj.user = $("#userid");
-	obj.password = $("#password");
+	obj.user = $("#userid").val();
+	username = obj.user;
+	obj.password = $("#password").val();
 
 	var str = JSON.stringify(obj);
-	console.log(str);
-	$.post(server_ip+login, str, function(data, status) {
-		console.log(data);
+	console.log(LOG_PREPEND + str);
+
+	doAjaxJSON(login, str, function(data) {
 		var obj = JSON.parse(data);
 		if (!obj.verified) {
-			console.log("Not verified");
-			alert("User Not Verified");
+			console.log(LOG_PREPEND + "Not verified");
+			alert(LOG_PREPEND + "User Not Verified");
+			return;
 		}
 		username = obj.name;
 		credits = obj.credits;
 		showPage("challenge");
+		$("#navbar").show();
 	});
 }
 
+function sendShowSurprise() {
+	var obj = new Object();
+	obj.user = username;
+
+	var str = JSON.stringify(obj);
+	console.log(LOG_PREPEND + str);
+
+	doAjaxJSON(showSurprise, str, function(data) {
+		var obj = JSON.parse(data);
+		challenge_id = obj.id;
+		challenge = obj.challenge;
+		credits = obj.credits;
+		skip_credits = obj.skip_credits;
+		console.log(data);
+		console.log(skip_credits);
+		console.log(challenge);
+
+		$("#surpriseme").hide();
+		$("#skipsurprisebutton").show();
+		$("#skipcost").html(skip_credits);
+		$("#surprisetext").html(challenge);
+	});
+}
+
+function sendSkipSurprise() {
+	var obj = new Object();
+	obj.user = username;
+	obj.id = challege_id;
+
+	var str = JSON.stringify(obj);
+	console.log(LOG_PREPEND + str);
+
+	doAjaxJSON(skipSurprise, str, function(data) {
+		var obj = JSON.parse(data);
+		challenge_id = obj.id;
+		challenge = obj.challenge;
+		credits = obj.credits;
+		skip_credits = obj.skip_credits;
+
+		$("#skipcost").text(skip_credits);
+		$("#surprisetext").text(challenge);
+	});
+}
+
+function sendCompleteSurprise() {
+	var obj = new Object();
+	obj.user = username;
+
+	var str = JSON.stringify(obj);
+	console.log(LOG_PREPEND + str);
+
+	doAjaxJSON(completeSurprise, str, function(data) {
+		var obj = JSON.parse(data);
+		challenge_id = obj.id;
+		challenge = obj.challenge;
+		credits = obj.credits;
+		skip_credits = obj.skip_credits;
+	});
+}
+
+function doAjaxJSON(page, my_data, callback) {
+	$.ajax({
+		url: server_ip + page,
+		type: "POST",
+		dataType: "xml/html/script/json",
+		contentType: "application/json",
+		data: my_data,
+
+		complete: function(data) {
+			console.log(data);
+			if(data.status == 200 && data.readyState == 4) {
+				callback(data.responseText);
+			} else {
+				console.log("Unable to contact server (" + server_ip + page + "), try again...");
+			}
+		}
+	});
+}
