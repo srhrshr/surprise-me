@@ -33,6 +33,7 @@ skip_credits=0;
 challenge_id=0;
 challenge="";
 challenge_credits=0;
+last_received_wall_challenge_id = 0;
 
 // For PC browser only
 $('body').onload=onLoad();
@@ -93,6 +94,7 @@ function showPage(page) {
 		$("#login").hide();
 		$("#challenge").hide();
 		$("#wall").show();
+		getWallcontents();
 
 	} else {
 		console.log (LOG_PREPEND + "Invalid Page Called: " + page);
@@ -234,4 +236,66 @@ function doAjaxJSON(page, my_data, callback) {
 			}
 		}
 	});
+}
+
+
+function getWallcontents()
+{
+	var obj = new Object();
+	obj.last_challenge_id = last_received_wall_challenge_id;	
+	var str = JSON.stringify(obj);
+	console.log(LOG_PREPEND + str);
+
+
+	doAjaxJSON(activity, str, function(data) {
+		var obj = JSON.parse(data);
+		
+		$.each( obj , function( key, value ) {
+			// var pre_appender = '<div class="card-small  grey lighten-2 black-text text-darken-2"> <div class="card-image"> <img src="';
+			// prepender.concat(concat the image here);
+			// pre_appender.concat('<span class="card-title"> ' + timeDifference(Date.now() , /*time here*/ * 1000) + ' </span> </div> <div class="card-content"><p>');
+			// pre_appender.concat('</p></div></div>');
+
+			  alert( key + " : " + value );
+			});
+	});
+
+}
+
+
+
+
+function timeDifference(current, previous) {
+
+    var msPerMinute = 60 * 1000;
+    var msPerHour = msPerMinute * 60;
+    var msPerDay = msPerHour * 24;
+    var msPerMonth = msPerDay * 30;
+    var msPerYear = msPerDay * 365;
+
+    var elapsed = current - previous;
+
+    if (elapsed < msPerMinute) {
+         return Math.round(elapsed/1000) + ' seconds ago';   
+    }
+
+    else if (elapsed < msPerHour) {
+         return Math.round(elapsed/msPerMinute) + ' minutes ago';   
+    }
+
+    else if (elapsed < msPerDay ) {
+         return Math.round(elapsed/msPerHour ) + ' hours ago';   
+    }
+
+    else if (elapsed < msPerMonth) {
+        return 'about ' + Math.round(elapsed/msPerDay) + ' days ago';   
+    }
+
+    else if (elapsed < msPerYear) {
+        return 'about ' + Math.round(elapsed/msPerMonth) + ' months ago';   
+    }
+
+    else {
+        return 'about ' + Math.round(elapsed/msPerYear ) + ' years ago';   
+    }
 }
