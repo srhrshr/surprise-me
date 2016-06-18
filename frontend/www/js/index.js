@@ -66,6 +66,7 @@ function onLoad() {
 	console.log(LOG_PREPEND + "onLoad()");
 	$(".button-collapse").sideNav();
 	showPage("login");
+	
 }
 
 function showPage(page) {
@@ -160,10 +161,10 @@ function sendSkipSurprise() {
 	var str = JSON.stringify(obj);
 	console.log(LOG_PREPEND + str);
 
-	credits -= skip_credits;
-	$("#bpoints").html(credits);
-
 	doAjaxJSON(skipSurprise, str, function(data) {
+		credits -= skip_credits;
+		$("#bpoints").html(credits);
+
 		var obj = JSON.parse(data);
 		challenge_id = obj.id;
 		challenge = obj.challenge;
@@ -189,7 +190,7 @@ function sendCompleteSurprise() {
 			console.log(LOG_PREPEND + "Picture success");
 			var obj = new Object();
 			obj.user = username;
-			obj.challenge_id = challenge_id;
+			obj.id = challenge_id;
 			obj.photo = data;
 
 			var str = JSON.stringify(obj);
@@ -217,6 +218,7 @@ function sendCompleteSurprise() {
 }
 
 function doAjaxJSON(page, my_data, callback) {
+	$("#loadinggif").show();
 	$.ajax({
 		url: server_ip + page,
 		type: "POST",
@@ -225,6 +227,7 @@ function doAjaxJSON(page, my_data, callback) {
 		data: my_data,
 
 		complete: function(data) {
+			$("#loadinggif").hide();
 			console.log(data);
 			if(data.status == 200 && data.readyState == 4) {
 				callback(data.responseText);
