@@ -85,7 +85,7 @@ exports.pr_set_user = function(user, password, callback) {
 };
 exports.fn_get_challenges = function(user_id, callback) {
     /*var sql = "SELECT c.challenge_id , c.challenge_type , c.challenge_difficulty , c.challenge_desc , c.challenge_credits FROM users u, challenges c WHERE c.challenge_difficulty <= u.user_level AND user_login_id = ?";*/
-    var sql = "SELECT c.challenge_id , c.challenge_type , c.challenge_difficulty , c.challenge_desc , c.challenge_credits FROM users u, challenges c WHERE c.challenge_difficulty <= u.user_level AND u.user_login_id = ? AND c.challenge_id NOT IN (SELECT challenge_id from skip_activities) AND c.challenge_id NOT IN (SELECT challenge_id from activities);"
+    var sql = "SELECT c.challenge_id , c.challenge_type , c.challenge_difficulty , c.challenge_desc , c.challenge_credits FROM users u, challenges c WHERE c.challenge_difficulty <= u.user_level AND u.user_login_id = ? AND c.challenge_id NOT IN (SELECT challenge_id from skip_activities WHERE user_id = (SELECT user_id from users where user_login_id = ?) ) AND c.challenge_id NOT IN (SELECT challenge_id from activities WHERE user_id = (SELECT user_id from users where user_login_id = ?) );"
         // get a connection from the pool
     pool.getConnection(function(err, connection) {
         if (err) {
@@ -94,7 +94,7 @@ exports.fn_get_challenges = function(user_id, callback) {
             return;
         }
         // make the query
-        connection.query(sql, [user_id], function(err, results) {
+        connection.query(sql, [user_id,user_id,user_id], function(err, results) {
             connection.release();
             if (err) {
                 console.log(err);
@@ -108,7 +108,7 @@ exports.fn_get_challenges = function(user_id, callback) {
 exports.fn_skip_challenge = function(user_id, challenge_id, callback) {
     var sql1 = "UPDATE users SET user_credits = user_credits - 5 WHERE user_login_id = ?;"
     var sql2 = "INSERT INTO skip_activities (user_id, challenge_id) SELECT user_id,? FROM users WHERE user_login_id = ?;"
-    var sql3 = "SELECT c.challenge_id , c.challenge_type , c.challenge_difficulty , c.challenge_desc , c.challenge_credits FROM users u, challenges c WHERE c.challenge_difficulty <= u.user_level AND u.user_login_id = ? AND c.challenge_id NOT IN (SELECT challenge_id from skip_activities) AND c.challenge_id NOT IN (SELECT challenge_id from activities);"
+    var sql3 = "SELECT c.challenge_id , c.challenge_type , c.challenge_difficulty , c.challenge_desc , c.challenge_credits FROM users u, challenges c WHERE c.challenge_difficulty <= u.user_level AND u.user_login_id = ? AND c.challenge_id NOT IN (SELECT challenge_id from skip_activities WHERE user_id = (SELECT user_id from users where user_login_id = ?) ) AND c.challenge_id NOT IN (SELECT challenge_id from activities WHERE user_id = (SELECT user_id from users where user_login_id = ?) );"
         // get a connection from the pool
     pool.getConnection(function(err, connection) {
         if (err) {
@@ -146,7 +146,7 @@ exports.fn_skip_challenge = function(user_id, challenge_id, callback) {
             return;
         }
         // make the query
-        connection.query(sql3, [user_id], function(err, results) {
+        connection.query(sql3, [user_id,user_id, user_id], function(err, results) {
             connection.release();
             if (err) {
                 console.log(err);
@@ -156,10 +156,10 @@ exports.fn_skip_challenge = function(user_id, challenge_id, callback) {
         });
     });
 };
-exports.fn_complete_challenge = function(user_id, challenge_id, callback) {
+exports.fn_complete_challenge = function(user_id, challenge_id, photo_path, callback) {
     var sql1 = "UPDATE users SET user_credits = user_credits + (SELECT challenge_credits FROM challenges WHERE challenge_id = ?) WHERE user_login_id = ?;"
-    var sql2 = "INSERT INTO activities (user_id, challenge_id, activity_picture) VALUES (?,?,NULL);"
-    var sql3 = "SELECT c.challenge_id , c.challenge_type , c.challenge_difficulty , c.challenge_desc , c.challenge_credits FROM users u, challenges c WHERE c.challenge_difficulty <= u.user_level AND u.user_login_id = ? AND c.challenge_id NOT IN (SELECT challenge_id from skip_activities) AND c.challenge_id NOT IN (SELECT challenge_id from activities);"
+    var sql2 = "INSERT INTO activities (user_id, challenge_id, activity_picture) SELECT user_id,?,? FROM users WHERE user_login_id = ?;"
+    var sql3 = "SELECT c.challenge_id , c.challenge_type , c.challenge_difficulty , c.challenge_desc , c.challenge_credits FROM users u, challenges c WHERE c.challenge_difficulty <= u.user_level AND u.user_login_id = ? AND c.challenge_id NOT IN (SELECT challenge_id from skip_activities WHERE user_id = (SELECT user_id from users where user_login_id = ?) ) AND c.challenge_id NOT IN (SELECT challenge_id from activities WHERE user_id = (SELECT user_id from users where user_login_id = ?) );"
         // get a connection from the pool
     pool.getConnection(function(err, connection) {
         if (err) {
@@ -181,7 +181,7 @@ exports.fn_complete_challenge = function(user_id, challenge_id, callback) {
             return;
         }
         // make the query
-        connection.query(sql2, [user_id, challenge_id], function(err, results) {
+        connection.query(sql2, [challenge_id, photo_path,user_id], function(err, results) {
             connection.release();
             if (err) {
                 console.log(err);
@@ -206,8 +206,8 @@ exports.fn_complete_challenge = function(user_id, challenge_id, callback) {
             });
         });
 };
-exports.fn_get_wall  = function(user, password, callback) {
-    var sql = "SELECT * FROM users WHERE user_login_id= ? AND user_login_pass = ?";
+exports.fn_get_wall  = function(callback) {
+    var sql = "SELECT * FROM activities";
     // get a connection from the pool
     pool.getConnection(function(err, connection) {
         if (err) {
@@ -216,7 +216,7 @@ exports.fn_get_wall  = function(user, password, callback) {
             return;
         }
         // make the query
-        connection.query(sql, [user, password], function(err, results) {
+        connection.query(sql, function(err, results) {
             connection.release();
             if (err) {
                 console.log(err);
@@ -233,7 +233,8 @@ app.use(morgan('dev'));
 /*app.use(bodyParser.urlencoded({
     extended: true
 }));*/
-app.use(bodyParser.json());
+app.use(express.static('public'));
+app.use(bodyParser.json({limit: '50mb'}));
 app.use(methodOverride());
 app.post('/api/login', api.login);
 app.post('/api/register', api.register);
