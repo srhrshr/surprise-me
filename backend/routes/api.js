@@ -59,7 +59,8 @@ exports.showSurprise = function(req,res){
             result = results[Math.ceil(Math.random()*results.length - 1)]
             var obj = {
             	"id":result.challenge_id,
-                "challege": result.challenge_desc,
+                "challenge": result.challenge_desc,
+		"skip_credits":5,
                 "credits": result.challenge_credits
             }
             res.status(200).json(obj);
