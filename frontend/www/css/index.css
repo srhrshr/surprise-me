@@ -1,21 +1,20 @@
 .hidden{
     display: none;
 }
-
 .centercontent{
-    text-align: center;
+	text-align: center;
 }
 html,
 body {
     height: 100%;
 }
 html {
-    display: table;
+    /*display: table;*/
     margin: auto;
 }
 body {
-    display: table-cell;
-    vertical-align: middle;
+    /*display: table-cell;*/
+    /*vertical-align: middle;*/
 }
 .margin {
   margin: 0 !important;

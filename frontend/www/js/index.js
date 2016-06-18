@@ -52,22 +52,24 @@ var app = {
 };
 
 function onLoad() {
+	$(".button-collapse").sideNav();
 	showPage("login");
 }
 
 function showPage(page) {
+	console.log("fun running");
 	if (page === "login") {
 		$("#login").show();
 		$("#challenge").hide();
 		$("#wall").hide();
 
 	} else if (page === "challenge") {
-		$("#page").hide();
+		$("#login").hide();
 		$("#challenge").show();
 		$("#wall").hide();
 
 	} else if (page === "wall") {
-		$("#page").hide();
+		$("#login").hide();
 		$("#challenge").hide();
 		$("#wall").show();
 
