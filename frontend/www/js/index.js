@@ -134,6 +134,7 @@ function sendShowSurprise() {
 
 		$("#surpriseme").hide();
 		$("#skipsurprisebutton").show();
+		$("#completebutton").show();
 		$("#skipcost").html(skip_credits);
 		$("#surprisetext").html(challenge);
 	});
@@ -160,6 +161,26 @@ function sendSkipSurprise() {
 }
 
 function sendCompleteSurprise() {
+	var cam = new Object();
+	cam.saveToPhotoAlbum = false;
+	cam.destinationType = Camera.DestinationType.DATA_URL;
+	cam.targetWidth = 800;
+	cam.targetHeight = 800;
+
+	navigator.camera.getPicture(
+		function (data) {
+			// success
+			console.log(LOG_PREPEND + "Picture success");
+		},
+		function (msg) {
+			// error
+			console.log(LOG_PREPEND + "Picture failed: " + msg);
+			return;
+		},
+		cam
+		);
+
+	/*
 	var obj = new Object();
 	obj.user = username;
 
@@ -172,7 +193,7 @@ function sendCompleteSurprise() {
 		challenge = obj.challenge;
 		credits = obj.credits;
 		skip_credits = obj.skip_credits;
-	});
+	});*/
 }
 
 function doAjaxJSON(page, my_data, callback) {

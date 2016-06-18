@@ -101,11 +101,12 @@
               <div class="card blue-grey darken-1">
                 <div style="height:60vh;" class="card-content white-text">
                   <span class="card-title">Your Surprise</span>
-                  <p id="surprisetext">Hit the SurpriseMe button!</p>
+                  <p id="surprisetext">Hit the SurpriseMe button!</p><br><br><br>
+                  <a style="display:none;" onclick="sendCompleteSurprise();" id="completebutton" class="btn">Take Picture & Complete</a>
                 </div>
                 <div class="card-action centercontent">
                   <a id="surpriseme" onclick="sendShowSurprise();" class="btn">Surprise Me</a><br><br>
-                  <a style="display:none;" id="skipsurprisebutton" class="btn">Skip This(-<span id="skipcost"></span> Pts)</a>
+                  <a style="display:none;" id="skipsurprisebutton" class="btn">Skip This (<span id="skipcost"></span> Pts)</a>
                 </div>
               </div>
             </div>
