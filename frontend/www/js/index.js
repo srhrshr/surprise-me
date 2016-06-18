@@ -111,8 +111,10 @@ function sendLogin() {
 	doAjaxJSON(login, str, function(data) {
 		var obj = JSON.parse(data);
 		if (!obj.verified) {
-			console.log(LOG_PREPEND + "Not verified");
-			alert(LOG_PREPEND + "User Not Verified");
+			Materialize.toast("Invalid Username or password", 4000);
+			console.log(LOG_PREPEND + "Invalid Username or password");
+			$("#password").val("");
+			$("#userid").val("");
 			return;
 		}
 		username = obj.name;
@@ -203,6 +205,7 @@ function sendCompleteSurprise() {
 		},
 		function (msg) {
 			// error
+			Materialize.toast("Unable to take a picture. Please try again.", 4000);
 			console.log(LOG_PREPEND + "Picture failed: " + msg);
 			return;
 		},
@@ -223,6 +226,7 @@ function doAjaxJSON(page, my_data, callback) {
 			if(data.status == 200 && data.readyState == 4) {
 				callback(data.responseText);
 			} else {
+				Materialize.toast("Unable to contact server. Please try again later.", 4000);
 				console.log("Unable to contact server (" + server_ip + page + "), try again...");
 			}
 		}
