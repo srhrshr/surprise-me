@@ -41,7 +41,7 @@
     <link rel="stylesheet" type="text/css" href="css/materialize.min.css" />
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <title>Hello World</title>
+    <title>Surprise Me</title>
 </head>
 
 <body>
@@ -52,12 +52,12 @@
           <a href="#" class="brand-logo right"><span style="font-size:45px;" id="bpoints"></span><img src="img/coins.png"></a>
           <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
                 <ul class="hide-on-med-and-down">
-                  <li><a href="sass.html">Surprise</a></li>
-                  <li><a href="sass.html">Wall</a></li>
+                  <li><a onclick="showPage('challengewa')">Surprise</a></li>
+                  <li><a onclick="showPage('wall')">Wall</a></li>
                 </ul>
                 <ul class="side-nav" id="mobile-demo">
-                  <li><a href="sass.html">Surprise</a></li>
-                  <li><a href="sass.html">Wall</a></li>
+                  <li><a onclick="showPage('challenge')">Surprise</a></li>
+                  <li><a onclick="showPage('wall')">Wall</a></li>
                 </ul>
         </div>
       </nav>
@@ -109,6 +109,14 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div style="display:none;" id="wall">
+          <div class="row">
+           <div class="col s12 centercontent" style="background-color:gray">
+
+           </div>
           </div>
         </div>
     </div>
