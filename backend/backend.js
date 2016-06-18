@@ -15,7 +15,7 @@ var pool = mysql.createPool({
   host     : config.MYSQL_HOST,
   user     : config.MYSQL_USER,
   password : config.MYSQL_PASSWORD,
-  database : config.DATABASE,
+  database : config.MYSQL_DATABASE,
   connectionLimit: 10,
   supportBigNumbers: true
 });
