@@ -154,10 +154,11 @@ app.post('/api/register', api.register);
 
 app.post('/api/showSurprise', api.showSurprise);
 
-/*
+app.post('/api/skipSurprise', api.skipSurprise);
+
 app.post('/api/completeSurprise', api.completeSurprise);
 
-app.post('/api/wall', api.wall);*/
+/*app.post('/api/wall', api.wall);*/
 
 // Start server
 app.listen(8000, function() {
