@@ -67,9 +67,8 @@ var app = {
 
 function onLoad() {
 	console.log(LOG_PREPEND + "onLoad()");
-	$(".button-collapse").sideNav();
+	$(".button-collapse").sideNav({closeOnClick:true});
 	showPage("login");
-
 }
 
 function showPage(page) {
@@ -199,7 +198,7 @@ function sendSkipSurprise() {
 	console.log(LOG_PREPEND + str);
 
 	doAjaxJSON(skipSurprise, str, function(data) {
-		credits -= skip_credits;
+		credits = $("#bpoints").text() - skip_credits;
 		$("#bpoints").html(credits);
 
 		var obj = JSON.parse(data);
@@ -232,7 +231,7 @@ function parseChallenge(challenge, challenge_credits) {
 		else
 			htmltoappend = htmltoappend + '<iframe width="300" height="315" src="'+challenge+'?autoplay=0&controls=0" frameborder="0" allowfullscreen></iframe>';
 		$("#surprisetext").html(htmltoappend);
-	} else if(challenge.challenge_type == "ARTICLE") {
+	} else if(challenge.indexOf("http")!= -1) {
 		htmltoappend = "";
 		htmltoappend = htmltoappend + "Read this article to complete the task<br>";
 		htmltoappend = htmltoappend + '<iframe width="300" height="315" src="'+challenge+'" frameborder="0" allowfullscreen></iframe>';
@@ -273,6 +272,7 @@ function sendCompleteSurprise() {
 				Materialize.toast('Posted to the wall', 4000);
 				credits += challenge_credits;
 				$("#bpoints").html(credits);
+				showPage("wall");
 			});
 		},
 		function (msg) {
