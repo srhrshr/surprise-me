@@ -50,7 +50,8 @@ exports.register = function(req, res) {
             res.status(200).json(obj);
         } else if (results != undefined && results.length == 0) {
             db.pr_set_user(req.body.user, req.body.password, function(err, results) {
-                if (err) {
+                console.log(results)
+		if (err) {
                     console.log(err)
                     res.send({
                         "status": 500,

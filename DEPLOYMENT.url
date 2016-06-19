@@ -1,0 +1,7 @@
+Endpoints -
+139.59.9.19:8000/api/login
+139.59.9.19:8000/api/register
+139.59.9.19:8000/api/showSurprise
+139.59.9.19:8000/api/skipSurprise
+139.59.9.19:8000/api/completeSurprise
+139.59.9.19:8000/api/wall
