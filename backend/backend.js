@@ -18,9 +18,9 @@ var pool = mysql.createPool({
     supportBigNumbers: true,
     multipleStatements: true
 });
-// Get records from a city
-exports.callProcedure = function(user_name, callback) {
-    var sql = "SELECT * FROM users WHERE user_login_id=? AND user_login_pass = ?";
+
+exports.checkUser = function(user_name, callback) {
+    var sql = "SELECT * FROM users WHERE user_login_id=?";
     // get a connection from the pool
     pool.getConnection(function(err, connection) {
         if (err) {
@@ -40,6 +40,7 @@ exports.callProcedure = function(user_name, callback) {
         });
     });
 };
+
 exports.fn_get_user = function(user, password, callback) {
     var sql = "SELECT * FROM users WHERE user_login_id= ? AND user_login_pass = ?";
     // get a connection from the pool
@@ -61,10 +62,29 @@ exports.fn_get_user = function(user, password, callback) {
         });
     });
 };
+
 exports.pr_set_user = function(user, password, callback) {
-    var sql = "insert into users (user_login_id , user_login_pass , user_full_name , user_mobile_number , user_profile_picture ) VALUES (?,?,'',1234567890, NULL)";
+    var sql1 = "insert into users (user_login_id , user_login_pass , user_full_name , user_mobile_number , user_profile_picture ) VALUES (?,?,'',1234567890, NULL)";
+    var sql2 = "SELECT * FROM users WHERE user_login_id= ? AND user_login_pass = ?";
     //var sql =  "INSERT INTO users SET user_login_id = ? AND user_login_pass = ?";
     // get a connection from the pool
+    pool.getConnection(function(err, connection) {
+        if (err) {
+            console.log(err);
+            //callback(true);
+            return;
+        }
+        // make the query
+        connection.query(sql1, [user, password], function(err, results) {
+            connection.release();
+            if (err) {
+                console.log(err);
+                //callback(true);
+                return;
+            }
+            //callback(false, results);
+        });
+    });
     pool.getConnection(function(err, connection) {
         if (err) {
             console.log(err);
@@ -72,7 +92,7 @@ exports.pr_set_user = function(user, password, callback) {
             return;
         }
         // make the query
-        connection.query(sql, [user, password], function(err, results) {
+        connection.query(sql2, [user, password], function(err, results) {
             connection.release();
             if (err) {
                 console.log(err);
@@ -83,6 +103,8 @@ exports.pr_set_user = function(user, password, callback) {
         });
     });
 };
+
+
 exports.fn_get_challenges = function(user_id, callback) {
     /*var sql = "SELECT c.challenge_id , c.challenge_type , c.challenge_difficulty , c.challenge_desc , c.challenge_credits FROM users u, challenges c WHERE c.challenge_difficulty <= u.user_level AND user_login_id = ?";*/
     var sql = "SELECT c.challenge_id , c.challenge_type , c.challenge_difficulty , c.challenge_desc , c.challenge_credits FROM users u, challenges c WHERE c.challenge_difficulty <= u.user_level AND u.user_login_id = ? AND c.challenge_id NOT IN (SELECT challenge_id from skip_activities WHERE user_id = (SELECT user_id from users where user_login_id = ?) ) AND c.challenge_id NOT IN (SELECT challenge_id from activities WHERE user_id = (SELECT user_id from users where user_login_id = ?) );"
@@ -207,7 +229,7 @@ exports.fn_complete_challenge = function(user_id, challenge_id, photo_path, call
         });
 };
 exports.fn_get_wall  = function(callback) {
-    var sql = "SELECT u.user_login_id as user, c.challenge_desc as challenge, a.activity_picture as photo FROM activities a, challenges c, users u WHERE a.challenge_id = c.challenge_id AND u.user_id = a.user_id";
+    var sql = "SELECT u.user_login_id as user, c.challenge_desc as challenge, a.activity_picture as photo, UNIX_TIMESTAMP(a.activity_dt) as timestamp FROM activities a, challenges c, users u WHERE a.challenge_id = c.challenge_id AND u.user_id = a.user_id";
     // get a connection from the pool
     pool.getConnection(function(err, connection) {
         if (err) {

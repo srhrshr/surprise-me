@@ -1,4 +1,3 @@
-
 var db = require('../backend');
 var decode = require('../decodeBase64Image')
 var fs = require('fs')
@@ -33,23 +32,56 @@ exports.login = function(req, res) {
 exports.register = function(req, res) {
     console.log(req.body.user)
     console.log(req.body.password)
-    db.pr_set_user(req.body.user, req.body.password, function(err, results) {
+    db.checkUser(req.body.user, function(err, results) {
         if (err) {
+            console.log(err)
             res.send({
                 "status": 500,
                 "message": "Server Error"
             });
             return;
+        } else if (results != undefined && results.length > 0) {
+            result = results[0]
+            var obj = {
+                "verified": false,
+                "name": result.user_login_id,
+                "status": "User already exists or invalid credentials"
+            }
+            res.status(200).json(obj);
+        } else if (results != undefined && results.length == 0) {
+            db.pr_set_user(req.body.user, req.body.password, function(err, results) {
+                if (err) {
+                    console.log(err)
+                    res.send({
+                        "status": 500,
+                        "message": "Server Error"
+                    });
+                    return;
+                } else if (results != undefined && results.length > 0) {
+                    result = results[0]
+                    var obj = {
+                        "verified": true,
+                        "name": result.user_login_id,
+                        "credits": result.user_credits
+                    }
+                    res.status(200).json(obj);
+                } else {
+                    res.status(200).send({
+                        "message": "User not found!"
+                    });
+                    return;
+                }
+            });
+        } else {
+            res.status(200).send({
+                "message": "User not found!"
+            });
+            return;
         }
-        // Respond with results as JSON
-        res.status(200).send({
-            "message": "Registered user successfully!"
-        });
     });
 };
-
-exports.showSurprise = function(req,res){
-	console.log(req.body.user)
+exports.showSurprise = function(req, res) {
+    console.log(req.body.user)
     db.fn_get_challenges(req.body.user, function(err, results) {
         if (err) {
             console.log(err)
@@ -59,11 +91,11 @@ exports.showSurprise = function(req,res){
             });
             return;
         } else if (results != undefined && results.length > 0) {
-            result = results[Math.ceil(Math.random()*results.length - 1)]
+            result = results[Math.ceil(Math.random() * results.length - 1)]
             var obj = {
-            	"id":result.challenge_id,
+                "id": result.challenge_id,
                 "challenge": result.challenge_desc,
-		        "skip_credits":5,
+                "skip_credits": 5,
                 "credits": result.challenge_credits
             }
             res.status(200).json(obj);
@@ -75,11 +107,10 @@ exports.showSurprise = function(req,res){
         }
     });
 }
-
-exports.skipSurprise = function(req,res){
+exports.skipSurprise = function(req, res) {
     console.log(req.body.id)
     console.log(req.body.user)
-    db.fn_skip_challenge(req.body.user,req.body.id, function(err, results) {
+    db.fn_skip_challenge(req.body.user, req.body.id, function(err, results) {
         if (err) {
             console.log(err)
             res.send({
@@ -88,11 +119,11 @@ exports.skipSurprise = function(req,res){
             });
             return;
         } else if (results != undefined && results.length > 0) {
-            result = results[Math.ceil(Math.random()*results.length - 1)]
+            result = results[Math.ceil(Math.random() * results.length - 1)]
             var obj = {
-                "id":result.challenge_id,
+                "id": result.challenge_id,
                 "challenge": result.challenge_desc,
-                "skip_credits":5,
+                "skip_credits": 5,
                 "credits": result.challenge_credits
             }
             res.status(200).json(obj);
@@ -104,29 +135,25 @@ exports.skipSurprise = function(req,res){
         }
     });
 }
-
-exports.completeSurprise = function(req,res){
+exports.completeSurprise = function(req, res) {
     console.log(req.body.id)
     console.log(req.body.user)
-
     var imageBuffer = decode.decodeBase64Image(req.body.photo)
     var photo_name = req.body.id + '_' + req.body.user + '.jpg'
-    var photo_path = '/images/' + photo_name 
-    fs.writeFile(__dirname + '/../public/images/'+photo_name, imageBuffer.data, function(err) { 
-
-        if(err) console.log(err) 
-        console.log('/images/'+photo_name)
+    var photo_path = '/images/' + photo_name
+    fs.writeFile(__dirname + '/../public/images/' + photo_name, imageBuffer.data, function(err) {
+        if (err) console.log(err)
+        console.log('/images/' + photo_name)
     });
+    /*    var img = new Buffer(req.body.photo, 'base64');
 
-/*    var img = new Buffer(req.body.photo, 'base64');
-
-   res.writeHead(200, {
-     'Content-Type': 'image/png',
-     'Content-Length': img.length
-   });
-   res.end(img);
-*/    
-db.fn_complete_challenge(req.body.user,req.body.id,photo_path, function(err, results) {
+       res.writeHead(200, {
+         'Content-Type': 'image/png',
+         'Content-Length': img.length
+       });
+       res.end(img);
+    */
+    db.fn_complete_challenge(req.body.user, req.body.id, photo_path, function(err, results) {
         if (err) {
             console.log(err)
             res.send({
@@ -135,11 +162,11 @@ db.fn_complete_challenge(req.body.user,req.body.id,photo_path, function(err, res
             });
             return;
         } else if (results != undefined && results.length > 0) {
-            result = results[Math.ceil(Math.random()*results.length - 1)]
+            result = results[Math.ceil(Math.random() * results.length - 1)]
             var obj = {
-                "id":result.challenge_id,
+                "id": result.challenge_id,
                 "challenge": result.challenge_desc,
-                "skip_credits":5,
+                "skip_credits": 5,
                 "credits": result.challenge_credits
             }
             res.status(200).json(obj);
@@ -151,9 +178,8 @@ db.fn_complete_challenge(req.body.user,req.body.id,photo_path, function(err, res
         }
     });
 }
-
 exports.wall = function(req, res) {
-     db.fn_get_wall(function(err, results) {
+    db.fn_get_wall(function(err, results) {
         if (err) {
             console.log(err)
             res.send({
@@ -163,14 +189,14 @@ exports.wall = function(req, res) {
             return;
         } else if (results != undefined && results.length > 0) {
             res.status(200).send(results)
-            /*result = results[Math.ceil(Math.random()*results.length - 1)]
-            var obj = {
-                "id":result.challenge_id,
-                "challenge": result.challenge_desc,
-                "skip_credits":5,
-                "credits": result.challenge_credits
-            }
-            res.status(200).json(obj);*/
+                /*result = results[Math.ceil(Math.random()*results.length - 1)]
+                var obj = {
+                    "id":result.challenge_id,
+                    "challenge": result.challenge_desc,
+                    "skip_credits":5,
+                    "credits": result.challenge_credits
+                }
+                res.status(200).json(obj);*/
         } else {
             res.status(200).send({
                 "message": "Wall not found!"
