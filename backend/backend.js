@@ -195,7 +195,7 @@ exports.fn_complete_challenge = function(user_id, challenge_id, photo_path, call
                 return;
             }
             // make the query
-            connection.query(sql3, [user_id], function(err, results) {
+            connection.query(sql3, [user_id,user_id, user_id], function(err, results) {
                 connection.release();
                 if (err) {
                     console.log(err);
@@ -207,7 +207,7 @@ exports.fn_complete_challenge = function(user_id, challenge_id, photo_path, call
         });
 };
 exports.fn_get_wall  = function(callback) {
-    var sql = "SELECT * FROM activities";
+    var sql = "SELECT u.user_login_id as user, c.challenge_desc as challenge, a.activity_picture as photo FROM activities a, challenges c, users u WHERE a.challenge_id = c.challenge_id AND u.user_id = a.user_id";
     // get a connection from the pool
     pool.getConnection(function(err, connection) {
         if (err) {

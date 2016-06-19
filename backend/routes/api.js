@@ -69,7 +69,7 @@ exports.showSurprise = function(req,res){
             res.status(200).json(obj);
         } else {
             res.status(200).send({
-                "message": "User not found!"
+                "message": "No challenges found!"
             });
             return;
         }
@@ -98,7 +98,7 @@ exports.skipSurprise = function(req,res){
             res.status(200).json(obj);
         } else {
             res.status(200).send({
-                "message": "User not found!"
+                "message": "No challenges found!"
             });
             return;
         }
@@ -145,7 +145,7 @@ db.fn_complete_challenge(req.body.user,req.body.id,photo_path, function(err, res
             res.status(200).json(obj);
         } else {
             res.status(200).send({
-                "message": "User not found!"
+                "message": "No challenges found!"
             });
             return;
         }
@@ -162,17 +162,18 @@ exports.wall = function(req, res) {
             });
             return;
         } else if (results != undefined && results.length > 0) {
-            result = results[Math.ceil(Math.random()*results.length - 1)]
+            res.status(200).send(results)
+            /*result = results[Math.ceil(Math.random()*results.length - 1)]
             var obj = {
                 "id":result.challenge_id,
                 "challenge": result.challenge_desc,
                 "skip_credits":5,
                 "credits": result.challenge_credits
             }
-            res.status(200).json(obj);
+            res.status(200).json(obj);*/
         } else {
             res.status(200).send({
-                "message": "User not found!"
+                "message": "Wall not found!"
             });
             return;
         }

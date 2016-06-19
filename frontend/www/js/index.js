@@ -187,9 +187,32 @@ function sendShowSurprise() {
 
 		$("#surpriseme").hide();
 		$("#skipsurprisebutton").show();
-		$("#completebutton").show();
 		$("#skipcost").html(skip_credits);
-		$("#surprisetext").html(challenge);
+		if( challenge.indexOf("youtube") != -1 ){
+			htmltoappend = "";
+			htmltoappend = htmltoappend + "Watch this video to complete the task<br>";
+			if( challenge.indexOf("autoplay=0")!= -1 )
+				challenge = challenge.replace("autoplay=0","");
+			if( challenge.indexOf("autoplay=1")!= -1 )
+				challenge = challenge.replace("autoplay=1","");
+			if( challenge.indexOf("controls=1")!= -1 )
+				challenge = challenge.replace("controls=1","");
+			if( challenge.indexOf("controls=0")!= -1 )
+				challenge = challenge.replace("controls=0","");
+			if( challenge.indexOf("?")!= -1 )
+				htmltoappend = htmltoappend + '<iframe width="560" height="315" src="'+challenge+'autoplay=0&controls=0" frameborder="0" allowfullscreen></iframe>';
+			else
+				htmltoappend = htmltoappend + '<iframe width="560" height="315" src="'+challenge+'?autoplay=0&controls=0" frameborder="0" allowfullscreen></iframe>';
+			$("#surprisetext").html(htmltoappend);
+		}else if(challenge.challenge_type == "ARTICLE"){
+			htmltoappend = "";
+			htmltoappend = htmltoappend + "Read this article to complete the task<br>";
+			htmltoappend = htmltoappend + '<iframe width="560" height="315" src="'+challenge+'" frameborder="0" allowfullscreen></iframe>';
+			$("#surprisetext").html(htmltoappend);
+		}else{
+			$("#completebutton").show();
+			$("#surprisetext").html(challenge);
+		}
 	});
 }
 
