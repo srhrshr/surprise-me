@@ -21,7 +21,9 @@ $.support.cors=true;
 LOG_PREPEND = "SurpriseMe!! ";
 
 server_ip="http://139.59.9.19:8000/api/";
+server_img_ip="http://139.59.9.19:8000";
 login="login";
+register="register";
 showSurprise="showSurprise";
 completeSurprise="completeSurprise";
 skipSurprise="skipSurprise";
@@ -67,11 +69,11 @@ function onLoad() {
 	console.log(LOG_PREPEND + "onLoad()");
 	$(".button-collapse").sideNav();
 	showPage("login");
-	
+
 }
 
 function showPage(page) {
-	if (page === "login") {
+	if (page === "login" || page === "logout") {
 		console.log(LOG_PREPEND + "Showing login page");
 		$("#login").show();
 		$("#challenge").hide();
@@ -80,6 +82,10 @@ function showPage(page) {
 		$("#surpriseme").hide();
 		$("#skipsurprisebutton").hide();
 		$("#completebutton").hide();
+
+		//clear out the user_id and password
+		$("#userid").val("");
+		$("#password").val("");
 
 	} else if (page === "challenge") {
 		console.log(LOG_PREPEND + "Showing challenge page");
@@ -95,6 +101,9 @@ function showPage(page) {
 		$("#login").hide();
 		$("#challenge").hide();
 		$("#wall").show();
+
+		// clear wall contents
+		$("#getWallContainers").html("");
 		getWallcontents();
 
 	} else {
@@ -127,6 +136,35 @@ function sendLogin() {
 		$("#navbar").show();
 
 		Materialize.toast('Welcome ' + username, 4000);
+	});
+}
+
+function sendRegister() {
+	var obj = new Object();
+	obj.user = $("#userid").val();
+	username = obj.user;
+	obj.password = $("#password").val();
+
+	var str = JSON.stringify(obj);
+	console.log(LOG_PREPEND + str);
+
+	doAjaxJSON(register, str, function(data) {
+		var obj = JSON.parse(data);
+		if (!obj.verified) {
+			Materialize.toast("Invalid Username or password", 4000);
+			console.log(LOG_PREPEND + "Invalid Username or password");
+			$("#password").val("");
+			$("#userid").val("");
+			return;
+		}
+
+		username = obj.name;
+		credits = obj.credits;
+		showPage("challenge");
+		$("#bpoints").html(credits);
+		$("#navbar").show();
+
+		Materialize.toast('User Registered Successfully!', 4000);
 	});
 }
 
@@ -188,7 +226,6 @@ function sendCompleteSurprise() {
 
 	navigator.camera.getPicture(
 		function (data) {
-			// success
 			console.log(LOG_PREPEND + "Picture success");
 			var obj = new Object();
 			obj.user = username;
@@ -241,64 +278,53 @@ function doAjaxJSON(page, my_data, callback) {
 	});
 }
 
-
-function getWallcontents()
-{
+function getWallcontents() {
 	var obj = new Object();
-	obj.last_challenge_id = last_received_wall_challenge_id;	
+	obj.last_challenge_id = last_received_wall_challenge_id;
 	var str = JSON.stringify(obj);
 	console.log(LOG_PREPEND + str);
 
-
 	doAjaxJSON(activity, str, function(data) {
 		var obj = JSON.parse(data);
-		
 		$.each( obj , function( key, value ) {
-			// var pre_appender = '<div class="card-small  grey lighten-2 black-text text-darken-2"> <div class="card-image"> <img src="';
-			// prepender.concat(concat the image here);
-			// pre_appender.concat('<span class="card-title"> ' + timeDifference(Date.now() , /*time here*/ * 1000) + ' </span> </div> <div class="card-content"><p>');
-			// pre_appender.concat('</p></div></div>');
+			var photo_ip = server_img_ip + value.photo;
+			var time_ago = timeDifference(Date.now() , value.timestamp * 1000);
+			var user_name = value.user;
+			var challenge_desc = value.challenge;
 
-			  alert( key + " : " + value );
+			var pre_appender = "<div class='row  grey lighten-2 black-text text-darken-2 z-depth-3'> \
+								<div class='col s4 m4 l4'> \
+									 <img src='"+ photo_ip + "' class='wall-image' /> <br>\
+									 <span class='card-title centercontent grey-text text-darken-1'> " + time_ago + " </span> \
+								</div>\
+								<div class='col s8 m8 l8'> \
+									 <h6> <b>" + user_name + "</b> just attempted the challenge <br><br>"+ challenge_desc +"</h6>\
+								</div>\
+								</div> ";
+				  $("#getWallContainers").append(pre_appender);
 			});
 	});
-
 }
 
-
-
-
 function timeDifference(current, previous) {
-
     var msPerMinute = 60 * 1000;
     var msPerHour = msPerMinute * 60;
     var msPerDay = msPerHour * 24;
     var msPerMonth = msPerDay * 30;
     var msPerYear = msPerDay * 365;
-
     var elapsed = current - previous;
 
     if (elapsed < msPerMinute) {
-         return Math.round(elapsed/1000) + ' seconds ago';   
-    }
-
-    else if (elapsed < msPerHour) {
-         return Math.round(elapsed/msPerMinute) + ' minutes ago';   
-    }
-
-    else if (elapsed < msPerDay ) {
-         return Math.round(elapsed/msPerHour ) + ' hours ago';   
-    }
-
-    else if (elapsed < msPerMonth) {
-        return 'about ' + Math.round(elapsed/msPerDay) + ' days ago';   
-    }
-
-    else if (elapsed < msPerYear) {
-        return 'about ' + Math.round(elapsed/msPerMonth) + ' months ago';   
-    }
-
-    else {
-        return 'about ' + Math.round(elapsed/msPerYear ) + ' years ago';   
+         return Math.round(elapsed/1000) + ' seconds ago';
+    } else if (elapsed < msPerHour) {
+         return Math.round(elapsed/msPerMinute) + ' minutes ago';
+    } else if (elapsed < msPerDay ) {
+         return Math.round(elapsed/msPerHour ) + ' hours ago';
+    } else if (elapsed < msPerMonth) {
+        return 'about ' + Math.round(elapsed/msPerDay) + ' days ago';
+    } else if (elapsed < msPerYear) {
+        return 'about ' + Math.round(elapsed/msPerMonth) + ' months ago';
+    } else {
+        return 'about ' + Math.round(elapsed/msPerYear ) + ' years ago';
     }
 }

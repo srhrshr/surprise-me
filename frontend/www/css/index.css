@@ -4,20 +4,14 @@
 .centercontent{
 	text-align: center;
 }
-html,
-body {
+html, body {
     height: 100%;
 }
 html {
-    /*display: table;*/
     margin: auto;
 }
-body {
-    /*display: table-cell;*/
-    /*vertical-align: middle;*/
-}
 .margin {
-  margin: 0 !important;
+	margin: 0 !important;
 }
 .inputfile {
 	width: 0.1px;
@@ -27,7 +21,6 @@ body {
 	position: absolute;
 	z-index: -1;
 }
-
 .inputfile + label {
     font-size: 1.25em;
     font-weight: 700;
@@ -48,6 +41,14 @@ body {
 #surprisetext {
 	padding-top:20vh;
 	font-size: 1.25em;
-    font-weight: 700;
-    color: white;
+	font-weight: 700;
+	color: white;
+}
+.wall-image {
+	min-width:100px;
+	max-width:100px;
+	min-height:100px;
+	max-height:100px;
+	margin:auto;
+	display:block;
 }

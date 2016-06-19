@@ -53,12 +53,18 @@
           <a href="#" class="brand-logo right"><span style="font-size:45px;" id="bpoints"></span><img src="img/coins.png"></a>
           <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
                 <ul class="hide-on-med-and-down">
-                  <li><a onclick="showPage('challengewa')">Surprise</a></li>
+                  <li><a onclick="showPage('challenge')">Surprise</a></li>
                   <li><a onclick="showPage('wall')">Wall</a></li>
+				  <li><a onclick="showPage('account')">My Account</a></li>
+				  <li class="divider"></li>
+				  <li><a onclick="showPage('logout')">Logout</a></li>
                 </ul>
                 <ul class="side-nav" id="mobile-demo">
                   <li><a onclick="showPage('challenge')">Surprise</a></li>
                   <li><a onclick="showPage('wall')">Wall</a></li>
+				  <li><a onclick="showPage('account')">My Account</a></li>
+				  <li class="divider"></li>
+				  <li><a onclick="showPage('logout')">Logout</a></li>
                 </ul>
         </div>
       </nav>
@@ -73,13 +79,13 @@
               </div>
               <div class="row margin">
                 <div class="input-field col s12">
-                  <input id="userid" type="text" value="harsh">
+                  <input id="userid" type="text">
                   <label for="userid">Email</label>
                 </div>
               </div>
               <div class="row margin">
                 <div class="input-field col s12">
-                  <input id="password" type="password" value="password">
+                  <input id="password" type="password">
                   <label for="password">Password</label>
                 </div>
               </div>
@@ -88,7 +94,7 @@
                   <a onclick="sendLogin();" id="login" class="btn waves-light waves-effect col s12">Login</a>
                 </div>
                 <div class="input-field col s12">
-                  <a onclick="sendLogin();" id="register" class="btn waves-light waves-effect col s12">Register</a>
+                  <a onclick="sendRegister();" id="register" class="btn waves-light waves-effect col s12">Register</a>
                 </div>
               </div>
             </form>
@@ -104,7 +110,7 @@
                   <p id="surprisetext">Hit the SurpriseMe button!</p><br><br><br>
                   <a style="display:none;" onclick="sendCompleteSurprise();" id="completebutton" class="btn">Take Picture & Complete</a>
                 </div>
-                <div class="card-action centercontent">
+				<div class="card-action centercontent">
                   <a id="surpriseme" onclick="sendShowSurprise();" class="btn">Surprise Me</a><br><br>
                   <a style="display:none;" onclick="sendSkipSurprise();"  id="skipsurprisebutton" class="btn">Skip This For <span id="skipcost"></span><img src="img/coinssmall.png"></a>
                 </div>
@@ -114,8 +120,11 @@
         </div>
 
         <div style="display:none;" id="wall">
-          <div class="row">
-         
+		  <div class="container centercontent">
+		    <h3> Challenge Feeds</h3>
+		  </div>
+          <div class="container" id="getWallContainers">
+		    </div>
           </div>
         </div>
     </div>
