@@ -151,8 +151,8 @@ function sendRegister() {
 	doAjaxJSON(register, str, function(data) {
 		var obj = JSON.parse(data);
 		if (!obj.verified) {
-			Materialize.toast("Invalid Username or password", 4000);
-			console.log(LOG_PREPEND + "Invalid Username or password");
+			Materialize.toast("Username already exists", 4000);
+			console.log(LOG_PREPEND + "Username already exists");
 			$("#password").val("");
 			$("#userid").val("");
 			return;
@@ -181,38 +181,12 @@ function sendShowSurprise() {
 		challenge = obj.challenge;
 		challenge_credits = obj.credits;
 		skip_credits = obj.skip_credits;
-		console.log(data);
-		console.log(skip_credits);
-		console.log(challenge);
 
 		$("#surpriseme").hide();
 		$("#skipsurprisebutton").show();
+		$("#completebutton").show();
 		$("#skipcost").html(skip_credits);
-		if( challenge.indexOf("youtube") != -1 ){
-			htmltoappend = "";
-			htmltoappend = htmltoappend + "Watch this video to complete the task<br>";
-			if( challenge.indexOf("autoplay=0")!= -1 )
-				challenge = challenge.replace("autoplay=0","");
-			if( challenge.indexOf("autoplay=1")!= -1 )
-				challenge = challenge.replace("autoplay=1","");
-			if( challenge.indexOf("controls=1")!= -1 )
-				challenge = challenge.replace("controls=1","");
-			if( challenge.indexOf("controls=0")!= -1 )
-				challenge = challenge.replace("controls=0","");
-			if( challenge.indexOf("?")!= -1 )
-				htmltoappend = htmltoappend + '<iframe width="560" height="315" src="'+challenge+'autoplay=0&controls=0" frameborder="0" allowfullscreen></iframe>';
-			else
-				htmltoappend = htmltoappend + '<iframe width="560" height="315" src="'+challenge+'?autoplay=0&controls=0" frameborder="0" allowfullscreen></iframe>';
-			$("#surprisetext").html(htmltoappend);
-		}else if(challenge.challenge_type == "ARTICLE"){
-			htmltoappend = "";
-			htmltoappend = htmltoappend + "Read this article to complete the task<br>";
-			htmltoappend = htmltoappend + '<iframe width="560" height="315" src="'+challenge+'" frameborder="0" allowfullscreen></iframe>';
-			$("#surprisetext").html(htmltoappend);
-		}else{
-			$("#completebutton").show();
-			$("#surprisetext").html(challenge);
-		}
+		parseChallenge(challenge, challenge_credits);
 	});
 }
 
@@ -237,7 +211,39 @@ function sendSkipSurprise() {
 
 		$("#skipcost").text(skip_credits);
 		$("#surprisetext").text(challenge);
+		parseChallenge(challenge, challenge_credits);
 	});
+}
+
+function parseChallenge(challenge, challenge_credits) {
+	if( challenge.indexOf("youtube") != -1 ) {
+		htmltoappend = "";
+		htmltoappend = htmltoappend + "Watch this video to complete the task<br>";
+		if( challenge.indexOf("autoplay=0")!= -1 )
+			challenge = challenge.replace("autoplay=0","");
+		if( challenge.indexOf("autoplay=1")!= -1 )
+			challenge = challenge.replace("autoplay=1","");
+		if( challenge.indexOf("controls=1")!= -1 )
+			challenge = challenge.replace("controls=1","");
+		if( challenge.indexOf("controls=0")!= -1 )
+			challenge = challenge.replace("controls=0","");
+		if( challenge.indexOf("?")!= -1 )
+			htmltoappend = htmltoappend + '<iframe width="300" height="315" src="'+challenge+'autoplay=0&controls=0" frameborder="0" allowfullscreen></iframe>';
+		else
+			htmltoappend = htmltoappend + '<iframe width="300" height="315" src="'+challenge+'?autoplay=0&controls=0" frameborder="0" allowfullscreen></iframe>';
+		$("#surprisetext").html(htmltoappend);
+	} else if(challenge.challenge_type == "ARTICLE") {
+		htmltoappend = "";
+		htmltoappend = htmltoappend + "Read this article to complete the task<br>";
+		htmltoappend = htmltoappend + '<iframe width="300" height="315" src="'+challenge+'" frameborder="0" allowfullscreen></iframe>';
+		$("#surprisetext").html(htmltoappend);
+
+	} else {
+		$("#surprisetext").html(challenge);
+	}
+
+	$("#surprisetext").append('<br> <br> <center>Earn '+challenge_credits+' <img src="img/coinssmall.png"> </center>');
+	$("#completebutton").show();
 }
 
 function sendCompleteSurprise() {
@@ -315,7 +321,7 @@ function getWallcontents() {
 			var user_name = value.user;
 			var challenge_desc = value.challenge;
 
-			var pre_appender = "<div class='row  grey lighten-2 black-text text-darken-2 z-depth-3'> \
+			var pre_appender = "<div class='row  grey lighten-2 black-text text-darken-2 z-depth-2'> \
 								<div class='col s4 m4 l4'> \
 									 <img src='"+ photo_ip + "' class='wall-image' /> <br>\
 									 <span class='card-title centercontent grey-text text-darken-1'> " + time_ago + " </span> \
