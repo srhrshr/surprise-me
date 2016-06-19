@@ -229,7 +229,7 @@ exports.fn_complete_challenge = function(user_id, challenge_id, photo_path, call
         });
 };
 exports.fn_get_wall  = function(callback) {
-    var sql = "SELECT u.user_login_id as user, c.challenge_desc as challenge, a.activity_picture as photo, UNIX_TIMESTAMP(a.activity_dt) as timestamp FROM activities a, challenges c, users u WHERE a.challenge_id = c.challenge_id AND u.user_id = a.user_id";
+    var sql = "SELECT u.user_login_id as user, c.challenge_desc as challenge, a.activity_picture as photo, UNIX_TIMESTAMP(a.activity_dt) as timestamp FROM activities a, challenges c, users u WHERE a.challenge_id = c.challenge_id AND u.user_id = a.user_id ORDER BY a.activity_dt DESC;"
     // get a connection from the pool
     pool.getConnection(function(err, connection) {
         if (err) {
