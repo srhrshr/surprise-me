@@ -20,8 +20,8 @@
 $.support.cors=true;
 LOG_PREPEND = "SurpriseMe!! ";
 
-server_ip="http://139.59.9.19:8000/api/";
-server_img_ip="http://139.59.9.19:8000";
+server_ip="http://139.59.9.191:8000/api/";
+server_img_ip="http://139.59.9.191:8000";
 login="login";
 register="register";
 showSurprise="showSurprise";
